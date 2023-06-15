@@ -1,8 +1,9 @@
 import requests
 import re
 import random
+import sys
 
-matchId = '1111146'
+
 tailor_base_url = 'http://ssai-tailor-nginx-ingress-k8-pp.npe.hotstar-labs.com/' 
 
 
@@ -44,12 +45,12 @@ def getMasterManifestUrls(bearer, match_id):
                 if tag['value'] != 'ssai':
                     break
             
-            # elif (tag['name']== 'resolution'):
-            #     cnt_tags += 1
-            #     if tag['value'] != 'fhd':
-            #         break
+            elif (tag['name']== 'resolution'):
+                cnt_tags += 1
+                if tag['value'] != 'fhd':
+                    break
 
-            if cnt_tags == 1:
+            if cnt_tags == 2:
                 url = obj['playbackUrl']
                 url = tailor_base_url + re.search(r'http(.*)(hls.*)', url).group(2)
                 master_file.write(url+'\n')
@@ -86,7 +87,8 @@ def generateFinalCSV(childUrls, out):
 
 if __name__ == '__main__' : 
 
-    bearer = 'Bearer eyJraWQiOiI3THFQbUNNU0R2dnNKc051SXlUb1dESnRhNW9UWmZWNFBER2k0QUljU0lZIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULks5aTNPWG5rdzRjX21KbjdiOHBtLURFdS1adXQ2OGdoZjhJWGQ4aEx2TE0ub2Fya3F3OGM0ZDhoTHlLbEUxZDYiLCJpc3MiOiJodHRwczovL2ZveC5va3RhLmNvbS9vYXV0aDIvZGVmYXVsdCIsImF1ZCI6ImFwaTovL2RlZmF1bHQiLCJpYXQiOjE2ODYwNDg3ODgsImV4cCI6MTY4NjA1MjM4OCwiY2lkIjoiMG9hMWg1ZjZsajN3RmtNd3oxZDgiLCJ1aWQiOiIwMHUxbGRta2NmM29rdEF4SDFkOCIsInNjcCI6WyJvZmZsaW5lX2FjY2VzcyIsInByb2ZpbGUiLCJlbWFpbCIsIm9wZW5pZCJdLCJhdXRoX3RpbWUiOjE2ODYwNDg3NzYsInN1YiI6InByYXNvb24uYmFnaGVsQGluLnN0YXJ0di5jb20ifQ.jjmmWzVsvrsCdkynmcw6Z8jUuYVVMNZQn6Z_juA1uZuik95jzsG5n35fPFjSLO7JW0bqggQImDp5eCsBFRt7yp6HDyxwLiXCVGSJTYcMlod5lAxJWgv195EOGSUePEjCSmCfMPXrErrr8DXomOPBoVClgXE_pWTj9AiWqWjjqb4CH7TYrUemidqNwKCY4U1nFMMhVZRpGoMMCzXdlfZSxsXkDfSAXwFle_RTZ8jH3mHAZ7ilhgy9cq_ZDACS7i7hX2mHv7AjkRZ2n9-TNvsSnYjcb_NeZFxKcwQOuh1J-K4mvhAUNohSDT7_s3KsJJDSHAqiMNewlX8UuLRbMK-RWg'
+    matchId = sys.argv[1]
+    bearer = sys.argv[2]
     masterUrls = getMasterManifestUrls(bearer, matchId)
 
     print("\n******************** GOT {n} MASTER URLS ***********************************\n".format(n=len(masterUrls)))
